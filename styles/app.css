@@ -1,4 +1,4 @@
-root{
+*{
     background-color: 	rgb(247, 243, 212);
    
     font-size: calc(14px + 0.2vw);
@@ -105,13 +105,32 @@ a
 .recordButtons
 {
     display: flex;
-    flex-direction: row;
-    
-    
+    flex-direction: row;    
 }
 
 button, label
 {
     margin-right: 5%;
     font-size: 1.5em;
+    margin: 2%;
 }
+
+
+.clip
+{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 5%;
+    gap: 3%;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 1%;
+    width: 80%;
+
+}
+
+audio{
+    width: 100%;
+}
+

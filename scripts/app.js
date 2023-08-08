@@ -1,9 +1,9 @@
 const start = document.querySelector('.start');
-const stop = document.querySelector('.stop');
-const cancel = document.querySelector('.cancel');
+// const stop = document.querySelector('.stop');
+// const cancel = document.querySelector('.cancel');
 const clips = document.querySelector('.clips');
 
-stop.disabled = true;
+
 
 if (navigator.mediaDevices.getUserMedia) 
 {
@@ -11,6 +11,7 @@ if (navigator.mediaDevices.getUserMedia)
 
     const constraints = { audio: true };
     let chunks = [];
+    let listening = false;
 
     
 
@@ -20,27 +21,34 @@ if (navigator.mediaDevices.getUserMedia)
             const mediaRecorder = new MediaRecorder(stream);
             
 
+            
             start.onclick = ()=>{
-                console.log("Start is clicked!");
-                mediaRecorder.start();
+                
+                if(!listening)
+                {
+                    console.log("Start is clicked!");
+                    mediaRecorder.start();
+    
+                    console.log(mediaRecorder.state);
+                    console.log("Recording Started..")
+    
+                    start.innerHTML = 'Stop';
+                    listening = true;
 
-                console.log(mediaRecorder.state);
-                console.log("Recording Started..")
-
-                stop.disabled = false;
-                start.disabled = true;
+                    clips.replaceChildren();
+                }
+                else
+                {
+                    mediaRecorder.stop();
+                    console.log(mediaRecorder.state);
+                    console.log("Recording Stopped..")
+    
+                    start.innerHTML = 'Start';
+                    listening = false;
+                }
 
             }
-
-            stop.onclick = ()=>{
-
-                mediaRecorder.stop();
-                console.log(mediaRecorder.state);
-                console.log("Recording Stopped..")
-
-                stop.disabled = true;
-                start.disabled = false;
-            }
+            
 
             mediaRecorder.onstop = ()=>{
 
@@ -49,12 +57,15 @@ if (navigator.mediaDevices.getUserMedia)
                 const clipName = document.createElement('p');
                 const audio = document.createElement('audio');
                 const deleteButton = document.createElement('button');
-                const downloadButton = document.createElement('download');
+                const downloadButton = document.createElement('a');
 
                 clip.className = 'clip';
 
                 deleteButton.className = 'delete';
                 deleteButton.textContent = 'Delete';
+
+                downloadButton.className = 'download';
+                downloadButton.textContent = 'Download';
 
                 audio.setAttribute('controls', '');
 
@@ -65,23 +76,26 @@ if (navigator.mediaDevices.getUserMedia)
                 
                 clips.appendChild(clip);
                 
-                audio.controls = true;
+                // audio.controls = true;
+                audio.setAttribute('controls', '');
 
-                const blob = new Blob(chunks, { 'type' : 'audio/mp4; codecs=opus' });
+                const blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
                 console.log(chunks);
                 chunks = [];
                 const audioURL = window.URL.createObjectURL(blob);
                 audio.src = audioURL;
+
+                downloadButton.setAttribute('href', audioURL);
+                downloadButton.setAttribute('download', 'myaudio');
+
                 console.log("recorder stopped");
 
                 deleteButton.onclick = (e)=> {
                     e.target.closest(".clip").remove();
                 }
-            
-
-                
-
             }
+
+            
 
             mediaRecorder.ondataavailable = (event)=>{
                 chunks.push(event.data);

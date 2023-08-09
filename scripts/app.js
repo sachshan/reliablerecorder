@@ -79,13 +79,16 @@ if (navigator.mediaDevices.getUserMedia)
                 // audio.controls = true;
                 audio.setAttribute('controls', '');
 
-                const blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
-                console.log(chunks);
+                const pblob = new Blob(chunks, { 'type' : 'audio/wav' });
+                const dBlob = new Blob(chunks, { 'type' : 'audio/webm; codecs=opus' }); 
+                console.log(pblob);
+                console.log(dBlob);
                 chunks = [];
-                const audioURL = window.URL.createObjectURL(blob);
-                audio.src = audioURL;
+                const paudioURL = window.URL.createObjectURL(pblob);
+                const daudioURL = window.URL.createObjectURL(dBlob);
+                audio.src = paudioURL;
 
-                downloadButton.setAttribute('href', audioURL);
+                downloadButton.setAttribute('href', daudioURL);
                 downloadButton.setAttribute('download', 'myaudio');
 
                 console.log("recorder stopped");

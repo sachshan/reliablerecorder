@@ -81,24 +81,9 @@ li {
  
 }
 
-
-a
-{
-    margin-top: 1%;
-    font-size: 1.5rem;
-    background-color: rgb(1, 83, 172);
-    color: white !important;
-    border-radius: 1.25em;
-    padding: 0 1em;
-    height: 2.5em;
-    display: inline-flex;
-    align-items: center;
-    font-weight: 500;
-}
-
 .AudioRecord
 {
-    border: 2px solid blue;
+    border: 2px solid black;
     padding: 2%;
 }
 
@@ -108,11 +93,16 @@ a
     flex-direction: row;    
 }
 
-button, label
+button, label, a
 {
+    text-decoration: none;
+    color: black;
     margin-right: 5%;
     font-size: 1.5em;
     margin: 2%;
+    border: 1px solid black;
+    padding: 2%;
+
 }
 
 

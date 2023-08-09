@@ -79,8 +79,8 @@ if (navigator.mediaDevices.getUserMedia)
                 // audio.controls = true;
                 audio.setAttribute('controls', '');
 
-                const pblob = new Blob(chunks, { 'type' : 'audio/wav' });
-                const dBlob = new Blob(chunks, { 'type' : 'audio/webm; codecs=opus' }); 
+                const pblob = new Blob(chunks, { 'type' : 'audio/mp4' });
+                const dBlob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' }); 
                 console.log(pblob);
                 console.log(dBlob);
                 chunks = [];

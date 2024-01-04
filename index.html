@@ -3,22 +3,23 @@
 <html>
     <head>
 
-        <title>Audio Recorder</title>
+        <title>Audio Class Predictor</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
         <link href="styles/app.css" rel="stylesheet" type="text/css">
 
     </head>
     <body>
 
-        <h1>Reliable Audio Recorder</h1>
+        <h1>Audio Class Predictor</h1>
+        <div class="mainContainer">
+            <div class='recordButtons'>
+                <button class="start">Record</button>
+                <div class="blinking-dot"></div>            
+            </div>
 
-        <div className='recordButtons'>
-            <button class="start">Start</button>
-            <!-- <button class="stop">Stop</button>
-            <button class="cancel">Cancel</button> -->
-            
+            <div class="clips"></div>
+            <div class="audioStatus"></div>
         </div>
-
-        <div class="clips"></div>
 
         
         <script src="scripts/app.js"></script>

@@ -1,100 +1,99 @@
-*{
-    background-color: 	rgb(247, 243, 212);
-   
+/* styles.css */
+
+* {
+    background-color: rgb(247, 243, 212);
     font-size: calc(14px + 0.2vw);
-    
-    
 }
 
-
-.main > *
-{
+.main > * {
     color: rgb(28, 38, 116) !important;
-    font-family: "Work Sans", sans-serif;
+    font-family: "Roboto", sans-serif;
     margin-left: 5%;
     margin-right: 5%;
-
-
 }
 
-.line
-{
+.line {
     background-color: darkblue;
     margin-right: 5%;
 }
 
-h1
-{
-    font-family: "Sora", sans-serif;
-    font-size: 4rem !important;
+h1 {
+    font-family: "Roboto", sans-serif;
+    font-size: 3rem !important;
     font-weight: 900 !important;
+    color: #00796b;
 }
 
-@media(max-width: 1024px)
+.mainContainer {
+    display: flex;
+    flex-direction: column; /* Set the flex direction to column */
+}
+
+.audioStatus
 {
-    h1
-    {
-        font-family: "Sora", sans-serif;
+    display: flex;
+    flex-direction: row;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+@media(max-width: 1024px) {
+    h1 {
+        font-family: "Roboto", sans-serif;
         font-size: 2.5rem !important;
         font-weight: 900 !important;
     }
 
-    h2{
-        font-family: "Sora", sans-serif;
+    h2 {
+        font-family: "Roboto", sans-serif;
         font-size: 1.1rem !important;
         font-weight: 800 !important;
-
     }
 
-    h3
-    {
-        font-family: "Sora", sans-serif;
+    h3 {
+        font-family: "Roboto", sans-serif;
         font-size: 1rem !important;
         font-weight: 800 !important;
     }
 }
 
-h2{
-    font-family: "Sora", sans-serif;
+h2 {
+    font-family: "Roboto", sans-serif;
     font-size: 2rem !important;
     font-weight: 800 !important;
-
 }
 
-h3
-{
-    font-family: "Sora", sans-serif;
+h3 {
+    font-family: "Roboto", sans-serif;
     font-size: 1.5rem !important;
     font-weight: 800 !important;
 }
 
-p   
-{
+p {
+    font-family: "Roboto", sans-serif;
     margin-top: 3%;
     font-size: 1.5rem;
 }
 
-
 li {
+    font-family: "Roboto", sans-serif;
     font-size: 1.5rem;
     list-style-type: circle;
- 
 }
 
-.AudioRecord
-{
+.AudioRecord {
     border: 2px solid black;
     padding: 2%;
 }
 
-.recordButtons
-{
+.recordButtons {
     display: flex;
-    flex-direction: row;    
+    flex-direction: row;
+    align-items: center;
+    border-radius: 25%;
 }
 
-button, label, a
-{
+button, label, a {
     text-decoration: none;
     color: black;
     margin-right: 5%;
@@ -102,12 +101,32 @@ button, label, a
     margin: 2%;
     border: 1px solid black;
     padding: 2%;
-
+    font-family: "Roboto", sans-serif;
+    border-radius: 5%;
 }
 
+/* Add this style block for blinking red dot */
+.recordButtons .start.blinking::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+    margin-left: 5px; /* Adjust the margin as needed */
+}
 
-.clip
-{
+@keyframes blink {
+    0%, 50%, 100% {
+        opacity: 0;
+    }
+    25%, 75% {
+        opacity: 1;
+    }
+}
+
+.clip {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -117,10 +136,8 @@ button, label, a
     border-radius: 10px;
     padding: 1%;
     width: 80%;
-
 }
 
-audio{
+audio {
     width: 100%;
 }
-

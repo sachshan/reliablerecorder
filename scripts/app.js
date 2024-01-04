@@ -2,8 +2,9 @@ const start = document.querySelector('.start');
 // const stop = document.querySelector('.stop');
 // const cancel = document.querySelector('.cancel');
 const clips = document.querySelector('.clips');
+const audioStatus = document.querySelector('.audioStatus');
 
-
+let blinking = false;
 
 if (navigator.mediaDevices.getUserMedia) 
 {
@@ -12,15 +13,12 @@ if (navigator.mediaDevices.getUserMedia)
     const constraints = { audio: true };
     let chunks = [];
     let listening = false;
-
     
 
     navigator.mediaDevices.getUserMedia(constraints)
         .then((stream)=>{
 
             const mediaRecorder = new MediaRecorder(stream);
-            
-
             
             start.onclick = ()=>{
                 
@@ -35,6 +33,8 @@ if (navigator.mediaDevices.getUserMedia)
                     start.innerHTML = 'Stop';
                     listening = true;
 
+                    toggleBlinking();
+
                     clips.replaceChildren();
                 }
                 else
@@ -43,8 +43,9 @@ if (navigator.mediaDevices.getUserMedia)
                     console.log(mediaRecorder.state);
                     console.log("Recording Stopped..")
     
-                    start.innerHTML = 'Start';
+                    start.innerHTML = 'Record';
                     listening = false;
+                    toggleBlinking();
                 }
 
             }
@@ -58,6 +59,7 @@ if (navigator.mediaDevices.getUserMedia)
                 const audio = document.createElement('audio');
                 const deleteButton = document.createElement('button');
                 const downloadButton = document.createElement('a');
+                const postButton = document.createElement('button');
 
                 clip.className = 'clip';
 
@@ -67,41 +69,133 @@ if (navigator.mediaDevices.getUserMedia)
                 downloadButton.className = 'download';
                 downloadButton.textContent = 'Download';
 
+                postButton.className = 'post';
+                postButton.textContent = 'Predict'
+
                 audio.setAttribute('controls', '');
 
                 clip.appendChild(clipName);
                 clip.appendChild(audio);
                 clip.appendChild(deleteButton);
                 clip.appendChild(downloadButton);
+                clip.appendChild(postButton)
                 
                 clips.appendChild(clip);
-                
-                // audio.controls = true;
+
                 audio.setAttribute('controls', '');
 
-                const pblob = new Blob(chunks, { 'type' : 'audio/mp4' });
-                const dBlob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' }); 
-                console.log(pblob);
-                console.log(dBlob);
+                const dBlob = new Blob(chunks, { type : 'audio/wav' }); 
+                const audioFile = new File([dBlob], "audio.wav");
+            
                 chunks = [];
-                const paudioURL = window.URL.createObjectURL(pblob);
-                const daudioURL = window.URL.createObjectURL(dBlob);
-                audio.src = paudioURL;
 
-                downloadButton.setAttribute('href', daudioURL);
-                downloadButton.setAttribute('download', 'myaudio');
+                const audioURL = window.URL.createObjectURL(audioFile);
+                audio.src = audioURL;
+
+                downloadButton.setAttribute('href', audioURL);
+                downloadButton.setAttribute('download', "filename.wav");
 
                 console.log("recorder stopped");
 
                 deleteButton.onclick = (e)=> {
                     e.target.closest(".clip").remove();
                 }
-            }
 
-            
+                postButton.onclick = async (e)=>{
+
+                    postButton.disabled = true;
+
+                    const formData = new FormData();
+                    formData.append('audio', audioFile);
+
+                    url = 'https://ap0k01gnn8.execute-api.us-east-1.amazonaws.com/Prod/upload_audio' 
+                    
+                    try {
+                        const presignedUrlResponse = await fetch(url, {method: 'GET'});
+                        const { presigned_url, s3_key } = await presignedUrlResponse.json();
+                        console.log(presigned_url, s3_key);
+                
+                        if (presigned_url && s3_key) {
+                            // Upload audio file to S3 using presigned URL
+                            const s3UploadResponse = await fetch(presigned_url, {
+                                method: 'PUT',
+                                body: audioFile
+                            });
+
+                            console.log('S3 Upload Response:', s3UploadResponse.status, s3UploadResponse.statusText);
+                            console.log('S3 Upload Response Body:', await s3UploadResponse.text());
+                
+                            if (s3UploadResponse.ok) {
+                                console.log('Upload to S3 successful.');
+
+                                const statusLabel = document.createElement('label');
+                                audioStatus.appendChild(statusLabel);
+
+                                // Further query and update the status of the audio file
+                                // Function to query and update the status of the audio file
+                                const queryAudioStatus = async () => {
+                                    try {
+                                        const statusResponse = await fetch(`https://ap0k01gnn8.execute-api.us-east-1.amazonaws.com/Prod/audio_status?s3_key=${s3_key}`);
+                                        const statusData = await statusResponse.json();
+                                        const status = statusData.status;
+                                        const iclass1 = statusData.iclass1;
+                                        const iclass2 = statusData.iclass2;
+
+                                        console.log('Audio Status:', statusData);
+                                    
+                                        if (status === 'Uploading' || status === 'Processing') {
+                                            // Continue querying until the status changes
+                                            statusLabel.textContent = `${status}`;
+                                            setTimeout(queryAudioStatus, 500); // Adjust the polling interval (e.g., 5 seconds)
+                                        } else {
+                                            statusLabel.textContent = `${status}`;
+                                            console.log('Audio status changed:', status);
+                                            // Add further handling based on the updated status
+
+                                            // Add the predicted class to the audioStatus div
+                                            const iclass1Label = document.createElement('label');
+                                            const iclass2Label = document.createElement('label');
+                                            iclass1Label.textContent = `${iclass1}`;
+                                            iclass2Label.textContent = `${iclass2}`;
+                                            audioStatus.appendChild(iclass1Label);
+                                            audioStatus.appendChild(iclass2Label);
+
+                                        }
+                                    } catch (error) {
+                                        console.error('Error querying audio status:', error);
+                                        statusLabel.textContent = `Error uploading to S3: ${s3UploadResponse.statusText}`;
+                                    }
+                                };
+
+                                // Start querying audio status
+                                queryAudioStatus();
+
+                            } else {
+                                console.error('Error uploading to S3:', s3UploadResponse.statusText);
+                            }
+                        } else {
+                            console.error('Error getting presigned URL from Lambda.');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        statusLabel.textContent = `Error: ${error}`;
+                    }          
+                    
+                }
+            }
 
             mediaRecorder.ondataavailable = (event)=>{
                 chunks.push(event.data);
+            }
+
+            function toggleBlinking() {
+                const blinkingDot = document.querySelector('.blinking-dot');
+                blinking = !blinking;
+                if (blinking) {
+                    blinkingDot.classList.add('blinking');
+                } else {
+                    blinkingDot.classList.remove('blinking');
+                }
             }
 
 
@@ -112,4 +206,3 @@ else
 {
     prompt("Audio recording not supported on this device!");
 }
-

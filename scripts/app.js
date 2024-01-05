@@ -36,6 +36,7 @@ if (navigator.mediaDevices.getUserMedia)
                     toggleBlinking();
 
                     clips.replaceChildren();
+                    audioStatus.replaceChildren();
                 }
                 else
                 {

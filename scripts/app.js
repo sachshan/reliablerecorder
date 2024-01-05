@@ -30,7 +30,7 @@ if (navigator.mediaDevices.getUserMedia)
                     console.log(mediaRecorder.state);
                     console.log("Recording Started..")
     
-                    start.innerHTML = 'Stop';
+                    start.innerHTML = 'STOP';
                     listening = true;
 
                     toggleBlinking();
@@ -43,7 +43,7 @@ if (navigator.mediaDevices.getUserMedia)
                     console.log(mediaRecorder.state);
                     console.log("Recording Stopped..")
     
-                    start.innerHTML = 'Record';
+                    start.innerHTML = 'REC';
                     listening = false;
                     toggleBlinking();
                 }
@@ -99,6 +99,7 @@ if (navigator.mediaDevices.getUserMedia)
 
                 deleteButton.onclick = (e)=> {
                     e.target.closest(".clip").remove();
+                    audioStatus.innerHTML = '';
                 }
 
                 postButton.onclick = async (e)=>{
@@ -146,15 +147,18 @@ if (navigator.mediaDevices.getUserMedia)
                                         if (status === 'Uploading' || status === 'Processing') {
                                             // Continue querying until the status changes
                                             statusLabel.textContent = `${status}`;
+                                            statusLabel.className = 'statusLabel';
                                             setTimeout(queryAudioStatus, 500); // Adjust the polling interval (e.g., 5 seconds)
                                         } else {
-                                            statusLabel.textContent = `${status}`;
+                                            statusLabel.textContent = `${status} Tags:`;
                                             console.log('Audio status changed:', status);
                                             // Add further handling based on the updated status
 
                                             // Add the predicted class to the audioStatus div
                                             const iclass1Label = document.createElement('label');
                                             const iclass2Label = document.createElement('label');
+                                            iclass1Label.className = 'iclass1Label';
+                                            iclass2Label.className = 'iclass2Label';
                                             iclass1Label.textContent = `${iclass1}`;
                                             iclass2Label.textContent = `${iclass2}`;
                                             audioStatus.appendChild(iclass1Label);
